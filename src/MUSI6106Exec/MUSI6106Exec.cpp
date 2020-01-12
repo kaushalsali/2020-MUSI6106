@@ -12,6 +12,8 @@ using std::endl;
 // local function declarations
 void    showClInfo ();
 
+
+
 /////////////////////////////////////////////////////////////////////////////////
 // main function
 int main(int argc, char* argv[])
@@ -33,21 +35,49 @@ int main(int argc, char* argv[])
 
     //////////////////////////////////////////////////////////////////////////////
     // parse command line arguments
- 
+    
+    sInputFilePath = argv[1];
+    sOutputFilePath = argv[2];
+    
     //////////////////////////////////////////////////////////////////////////////
     // open the input wave file
- 
+    
+    CAudioFileIf::create(phAudioFile);
+    phAudioFile->openFile(sInputFilePath, CAudioFileIf::FileIoType_t::kFileRead, &stFileSpec);    
+    
     //////////////////////////////////////////////////////////////////////////////
     // open the output text file
+    
+    hOutputFile.open(sOutputFilePath, std::fstream::out);
+    hOutputFile.precision(16);
  
     //////////////////////////////////////////////////////////////////////////////
     // allocate memory
- 
+    
+    int numChannels = 2;
+    ppfAudioData = (float **) malloc(numChannels * sizeof(float *));
+    for (int i=0; i<numChannels; i++) {
+        ppfAudioData[i] = (float *) malloc(kBlockSize * sizeof(float));
+    }
+    
     //////////////////////////////////////////////////////////////////////////////
     // get audio data and write it to the output text file (one column per channel)
-
+        
+    long long blockSize = kBlockSize;
+    while(!phAudioFile->isEof()) {
+        phAudioFile->readData(ppfAudioData, blockSize);
+        for (int i=0; i<blockSize; i++) {
+            hOutputFile << ppfAudioData[0][i] << "\t" << ppfAudioData[1][i] << std::endl;
+        }
+    }
+    
     //////////////////////////////////////////////////////////////////////////////
     // clean-up (close files and free memory)
+
+    free(ppfAudioData);
+    phAudioFile->closeFile();
+    CAudioFileIf::destroy(phAudioFile);
+    hOutputFile.close();
 
     // all done
     return 0;

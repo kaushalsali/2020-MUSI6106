@@ -34,3 +34,6 @@
 /bld/.vs/MUSI6106/v16/*.suo
 bld
 /lib/debug/*.exp
+
+# MacOS files
+.DS_Store
