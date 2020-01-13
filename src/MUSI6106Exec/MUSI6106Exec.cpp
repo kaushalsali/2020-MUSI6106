@@ -43,8 +43,9 @@ int main(int argc, char* argv[])
     // open the input wave file
     
     CAudioFileIf::create(phAudioFile);
-    phAudioFile->openFile(sInputFilePath, CAudioFileIf::FileIoType_t::kFileRead, &stFileSpec);    
-    
+    phAudioFile->openFile(sInputFilePath, CAudioFileIf::FileIoType_t::kFileRead, &stFileSpec);
+    phAudioFile->getFileSpec(stFileSpec);
+
     //////////////////////////////////////////////////////////////////////////////
     // open the output text file
     
@@ -53,10 +54,9 @@ int main(int argc, char* argv[])
  
     //////////////////////////////////////////////////////////////////////////////
     // allocate memory
-    
-    int numChannels = 2;
-    ppfAudioData = (float **) malloc(numChannels * sizeof(float *));
-    for (int i=0; i<numChannels; i++) {
+
+    ppfAudioData = (float **) malloc(stFileSpec.iNumChannels * sizeof(float *));
+    for (int i=0; i<stFileSpec.iNumChannels; i++) {
         ppfAudioData[i] = (float *) malloc(kBlockSize * sizeof(float));
     }
     
@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
     long long blockSize = kBlockSize;
     while(!phAudioFile->isEof()) {
         phAudioFile->readData(ppfAudioData, blockSize);
-        for (int i=0; i<blockSize; i++) {
+        for (long long i=0; i<blockSize; i++) {
             hOutputFile << ppfAudioData[0][i] << "\t" << ppfAudioData[1][i] << std::endl;
         }
     }
@@ -74,6 +74,8 @@ int main(int argc, char* argv[])
     //////////////////////////////////////////////////////////////////////////////
     // clean-up (close files and free memory)
 
+    for (int i=0; i<stFileSpec.iNumChannels; i++)
+        free(ppfAudioData[i]);
     free(ppfAudioData);
     phAudioFile->closeFile();
     CAudioFileIf::destroy(phAudioFile);
