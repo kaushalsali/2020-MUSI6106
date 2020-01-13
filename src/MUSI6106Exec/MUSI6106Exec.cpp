@@ -67,7 +67,9 @@ int main(int argc, char* argv[])
     while(!phAudioFile->isEof()) {
         phAudioFile->readData(ppfAudioData, blockSize);
         for (long long i=0; i<blockSize; i++) {
-            hOutputFile << ppfAudioData[0][i] << "\t" << ppfAudioData[1][i] << std::endl;
+            for (int j=0; j<stFileSpec.iNumChannels; j++)
+                hOutputFile << ppfAudioData[j][i] << "\t";
+            hOutputFile << std::endl;
         }
     }
     
