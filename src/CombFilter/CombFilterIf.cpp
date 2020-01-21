@@ -8,6 +8,7 @@
 #include "Util.h"
 
 #include "CombFilterIf.h"
+#include "CombFilter.h"
 
 static const char*  kCMyProjectBuildDate             = __DATE__;
 
@@ -56,16 +57,28 @@ const char*  CCombFilterIf::getBuildDate ()
 
 Error_t CCombFilterIf::create( CCombFilterIf*& pCCombFilter)
 {
+    pCCombFilter = new CCombFilterIf();
     return kNoError;
 }
 
 Error_t CCombFilterIf::destroy (CCombFilterIf*& pCCombFilter)
 {
+    delete pCCombFilter;
+    pCCombFilter = nullptr;
     return kNoError;
 }
 
 Error_t CCombFilterIf::init( CombFilterType_t eFilterType, float fMaxDelayLengthInS, float fSampleRateInHz, int iNumChannels )
 {
+    m_fSampleRate = fSampleRateInHz;
+    int delayLength = fMaxDelayLengthInS * fSampleRateInHz; // TODO: Ceil this ??
+    if (eFilterType == kCombFIR) {
+        m_pCCombFilter = new CCombFilterFIR(delayLength, iNumChannels);
+    }
+    else if (eFilterType == kCombIIR) {
+        m_pCCombFilter = new CCombFilterIIR(delayLength, iNumChannels);
+    }
+    m_bIsInitialized = true; // TODO: How to check if correctly init ?
     return kNoError;
 }
 
@@ -76,6 +89,7 @@ Error_t CCombFilterIf::reset ()
 
 Error_t CCombFilterIf::process( float **ppfInputBuffer, float **ppfOutputBuffer, int iNumberOfFrames )
 {
+    m_pCCombFilter->filter(ppfInputBuffer, ppfOutputBuffer, iNumberOfFrames);
     return kNoError;
 }
 
