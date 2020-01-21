@@ -15,3 +15,5 @@ set_target_properties(${CurrLib} PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 # set output name
 set_target_properties(${CurrLib} PROPERTIES OUTPUT_NAME "${CurrLib}")
 set_target_properties(${CurrLib} PROPERTIES PREFIX "lib")
+
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
