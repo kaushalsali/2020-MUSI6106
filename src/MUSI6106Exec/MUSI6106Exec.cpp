@@ -33,25 +33,38 @@ int main(int argc, char* argv[]) {
     CAudioFileIf::FileSpec_t stFileSpec;
 
     CCombFilterIf *pCombFilter = 0;
+    CCombFilterIf::CombFilterType_t filterType;
     showClInfo();
 
     //////////////////////////////////////////////////////////////////////////////
     // parse command line arguments
 
-    if (argc > 1)
-        sInputFilePath = argv[1]; // TODO: Get as int
+    if (argc > 1) {
+        sInputFilePath = argv[1];
+        sOutputFilePath = sInputFilePath.substr(0, sInputFilePath.size() - 4).append("_out.wav");
+    }
     else {
-        std::cout << "Missing: arg1: Audio input path, arg2: Audio output path." << std::endl;
+        std::cout << "Missing: arg1: Input audio path" << std::endl;
         return -1;
     }
-    if (argc > 2)
-        sOutputFilePath = argv[2];
-    else
-        sOutputFilePath = sInputFilePath.substr(0, sInputFilePath.size()-4).append("_out.wav");
+    if (argc > 2) {
+        std::string arg = argv[2];
+        if (arg == "fir")
+            filterType = CCombFilterIf::kCombFIR;
+        else if (arg == "iir")
+            filterType = CCombFilterIf::kCombIIR;
+        else {
+            std::cout << "Missing: arg2: Filter type ('fir' or 'iir')" << std::endl;
+            return -1;
+        }
+    }
     if (argc > 3)
-        delayTimeInSec = *argv[3];
+        delayTimeInSec = atof(argv[3]);
     else
-        delayTimeInSec = 1;
+        delayTimeInSec = 0.01;
+
+    std::cout << "Filter Type: " << argv[2] << std::endl;
+    std::cout << "Delay: " << delayTimeInSec << std::endl;
 
     //////////////////////////////////////////////////////////////////////////////
     // open the input wave file
@@ -88,7 +101,7 @@ int main(int argc, char* argv[]) {
     // create Comb Filter
 
     CCombFilterIf::create(pCombFilter);
-    pCombFilter->init(CCombFilterIf::kCombFIR, delayTimeInSec, stFileSpec.fSampleRateInHz, stFileSpec.iNumChannels);
+    pCombFilter->init(filterType, delayTimeInSec, stFileSpec.fSampleRateInHz, stFileSpec.iNumChannels);
 
     //////////////////////////////////////////////////////////////////////////////
     // Read, filter and write audio
