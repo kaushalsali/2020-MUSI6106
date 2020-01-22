@@ -32,12 +32,12 @@ CCombFilterBase::~CCombFilterBase() {
 CCombFilterFIR::CCombFilterFIR(int delayLineLength, int numChannels, float g) : CCombFilterBase(delayLineLength,
                                                                                                 numChannels, g) {}
 
-Error_t CCombFilterFIR::filter(float **&ppfInputBuffer, float **&ppfOutputBuffer, int iNumberOfFrames) {
+Error_t CCombFilterFIR::filter(float **ppfInputBuffer, float **ppfOutputBuffer, int iNumberOfFrames) {
     auto *sample = new float[numChannels];
     for (int i=0; i<iNumberOfFrames; i++) {
         delayLine->fetch(sample);
         for (int c=0; c<numChannels; c++) {
-            ppfOutputBuffer[c][i] = ppfInputBuffer[c][i] * g * sample[c];
+            ppfOutputBuffer[c][i] = ppfInputBuffer[c][i] + g * sample[c];
         }
         delayLine->insert(ppfInputBuffer, i);
     }
@@ -49,12 +49,12 @@ Error_t CCombFilterFIR::filter(float **&ppfInputBuffer, float **&ppfOutputBuffer
 CCombFilterIIR::CCombFilterIIR(int delayLineLength, int numChannels, float g) : CCombFilterBase(delayLineLength,
                                                                                                 numChannels, g) {}
 
-Error_t CCombFilterIIR::filter(float **&ppfInputBuffer, float **&ppfOutputBuffer, int iNumberOfFrames) {
+Error_t CCombFilterIIR::filter(float **ppfInputBuffer, float **ppfOutputBuffer, int iNumberOfFrames) {
     auto *sample = new float[numChannels];
     for (int i=0; i<iNumberOfFrames; i++) {
         delayLine->fetch(sample);
         for (int c=0; c<numChannels; c++) {
-            ppfOutputBuffer[c][i] = ppfInputBuffer[c][i] * g * sample[c];
+            ppfOutputBuffer[c][i] = ppfInputBuffer[c][i] + g * sample[c];
         }
         delayLine->insert(ppfOutputBuffer, i);
     }
@@ -84,7 +84,7 @@ AudioRingBuffer::~AudioRingBuffer() {
     buffer = nullptr;
 }
 
-bool AudioRingBuffer::insert(float **&audioBuffer, int sampleIndex) {
+bool AudioRingBuffer::insert(float **audioBuffer, int sampleIndex) {
     if (!full) {
         for(int c=0; c<numChannels; c++) {
             buffer[c][rear] = audioBuffer[c][sampleIndex];
@@ -100,7 +100,7 @@ bool AudioRingBuffer::insert(float **&audioBuffer, int sampleIndex) {
         return false;
 }
 
-bool AudioRingBuffer::fetch(float *&sampleBuffer) {
+bool AudioRingBuffer::fetch(float *sampleBuffer) {
     if (!empty) {
         for (int c = 0; c < numChannels; c++) {
             sampleBuffer[c] = buffer[c][front];

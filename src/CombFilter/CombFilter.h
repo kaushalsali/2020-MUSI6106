@@ -6,17 +6,17 @@
 #define MUSI6106_COMBFILTER_H
 
 
-#include <CombFilterIf.h>
+//#include <CombFilterIf.h>
 #include <AudioFileIf.h>
 
 class AudioRingBuffer;
 
 // Abstract class
-class CCombFilterBase {  // TODO: Why is this declared in the Interface????
+class CCombFilterBase {
 public:
     CCombFilterBase(int delayLineLength, int numChannels, float g=0.5);
     virtual ~CCombFilterBase();
-    virtual Error_t filter(float **&ppfInputBuffer, float **&ppfOutputBuffer, int iNumberOfFrames) = 0;
+    virtual Error_t filter(float **ppfInputBuffer, float **ppfOutputBuffer, int iNumberOfFrames) = 0;
 
 protected:
     int delayLineLength;
@@ -29,24 +29,24 @@ protected:
 class CCombFilterFIR : public CCombFilterBase {
 public:
     CCombFilterFIR(int delayLineLength, int numChannels, float g=0.5);
-    Error_t filter(float **&ppfInputBuffer, float **&ppfOutputBuffer, int iNumberOfFrames) override;
+    Error_t filter(float **ppfInputBuffer, float **ppfOutputBuffer, int iNumberOfFrames) override;
 };
 
 
 class CCombFilterIIR : public CCombFilterBase {
 public:
     CCombFilterIIR(int delayLineLength, int numChannels, float g = 0.5);
-    Error_t filter(float **&ppfInputBuffer, float **&ppfOutputBuffer, int iNumberOfFrames) override;
+    Error_t filter(float **ppfInputBuffer, float **ppfOutputBuffer, int iNumberOfFrames) override;
 };
 
 
 
-class AudioRingBuffer {
+class AudioRingBuffer {  // TODO: Ideally should be placed outside of CombFilter folder.
 public:
-    AudioRingBuffer(int bufferLength, int numChannels); // TODO: Can you specify default values here in .h?
+    AudioRingBuffer(int bufferLength, int numChannels);
     ~AudioRingBuffer();
-    bool insert(float **&audioBuffer, int sampleIndex);
-    bool fetch(float *&sampleBuffer);
+    bool insert(float **audioBuffer, int sampleIndex);  //TODO: Return type Error_t ?
+    bool fetch(float *sampleBuffer);
     bool remove();
 
 private:
@@ -57,8 +57,6 @@ private:
     int rear;
     bool empty;
     bool full;
-
-//    AudioRingBuffer(int bufferLength, int numChannels, int front=0, int rear=0, bool empty=true, bool full=false);
 };
 
 #endif //MUSI6106_COMBFILTER_H

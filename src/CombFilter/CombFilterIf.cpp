@@ -71,14 +71,14 @@ Error_t CCombFilterIf::destroy (CCombFilterIf*& pCCombFilter)
 Error_t CCombFilterIf::init( CombFilterType_t eFilterType, float fMaxDelayLengthInS, float fSampleRateInHz, int iNumChannels )
 {
     m_fSampleRate = fSampleRateInHz;
-    int delayLength = fMaxDelayLengthInS * fSampleRateInHz; // TODO: Ceil this ??
+    int delayLength = (int)(fMaxDelayLengthInS * fSampleRateInHz);
     if (eFilterType == kCombFIR) {
         m_pCCombFilter = new CCombFilterFIR(delayLength, iNumChannels);
     }
     else if (eFilterType == kCombIIR) {
         m_pCCombFilter = new CCombFilterIIR(delayLength, iNumChannels);
     }
-    m_bIsInitialized = true; // TODO: How to check if correctly init ?
+    m_bIsInitialized = true;
     return kNoError;
 }
 
