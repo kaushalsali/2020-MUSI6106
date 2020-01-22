@@ -41,10 +41,9 @@ int main(int argc, char* argv[]) {
 
     if (argc > 1) {
         sInputFilePath = argv[1];
-        sOutputFilePath = sInputFilePath.substr(0, sInputFilePath.size() - 4).append("_out.wav");
     }
     else {
-        std::cout << "Missing: arg1: Input audio path" << std::endl;
+        std::cout << "Missing: arg1: Input audio path, arg2: Filter type ('fir' or 'iir')" << std::endl;
         return -1;
     }
     if (argc > 2) {
@@ -57,6 +56,7 @@ int main(int argc, char* argv[]) {
             std::cout << "Missing: arg2: Filter type ('fir' or 'iir')" << std::endl;
             return -1;
         }
+        sOutputFilePath = sInputFilePath.substr(0, sInputFilePath.size() - 4).append("_" + arg + "_cpp.wav");
     }
     if (argc > 3)
         delayTimeInSec = atof(argv[3]);

@@ -2,7 +2,6 @@
 // Created by Kaushal Sali on 19/01/20.
 //
 
-#include <iostream>
 #include "CombFilter.h"
 
 CCombFilterBase::CCombFilterBase(int delayLineLength, int numChannels, float g) :
