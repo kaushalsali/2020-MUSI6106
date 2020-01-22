@@ -41,13 +41,13 @@ public:
 
 
 
-class AudioRingBuffer {  // TODO: Ideally should be placed outside of CombFilter folder.
+class AudioRingBuffer {  // Note: Ideally should be placed separately outside of CombFilter folder.
 public:
     AudioRingBuffer(int bufferLength, int numChannels);
     ~AudioRingBuffer();
-    bool insert(float **audioBuffer, int sampleIndex);  //TODO: Return type Error_t ?
-    bool fetch(float *sampleBuffer);
-    bool remove();
+    Error_t insert(float **audioBuffer, int sampleIndex);
+    Error_t fetch(float *sampleBuffer);
+    Error_t remove();
 
 private:
     int bufferLength;

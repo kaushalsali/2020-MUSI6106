@@ -18,7 +18,9 @@ enum Error_t
 
     kUnknownError,
 
-    kNumErrors
+    kNumErrors,
+
+    kOperationUnsuccessful
 };
 #endif // #if !defined(__ErrorDef_hdr__)
 

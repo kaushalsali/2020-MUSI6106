@@ -84,7 +84,7 @@ AudioRingBuffer::~AudioRingBuffer() {
     buffer = nullptr;
 }
 
-bool AudioRingBuffer::insert(float **audioBuffer, int sampleIndex) {
+Error_t AudioRingBuffer::insert(float **audioBuffer, int sampleIndex) {
     if (!full) {
         for(int c=0; c<numChannels; c++) {
             buffer[c][rear] = audioBuffer[c][sampleIndex];
@@ -94,13 +94,13 @@ bool AudioRingBuffer::insert(float **audioBuffer, int sampleIndex) {
             empty = false;
         if (rear == front)
             full = true;
-        return true;
+        return kNoError;
     }
     else
-        return false;
+        return kOperationUnsuccessful;
 }
 
-bool AudioRingBuffer::fetch(float *sampleBuffer) {
+Error_t AudioRingBuffer::fetch(float *sampleBuffer) {
     if (!empty) {
         for (int c = 0; c < numChannels; c++) {
             sampleBuffer[c] = buffer[c][front];
@@ -110,22 +110,22 @@ bool AudioRingBuffer::fetch(float *sampleBuffer) {
             full = false;
         if (front == rear)
             empty = true;
-        return true;
+        return kNoError;
     }
     else
-        return false;
+        return kOperationUnsuccessful;
 }
 
-bool AudioRingBuffer::remove() {
+Error_t AudioRingBuffer::remove() {
     if (!empty) {
         front = (front + 1) % bufferLength;
         if (full)
             full = false;
         if (front == rear)
             empty = true;
-        return true;
+        return kNoError;
     }
     else
-        return false;
+        return kOperationUnsuccessful;
 }
 
