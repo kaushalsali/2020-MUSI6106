@@ -33,7 +33,7 @@ float CCombFilterBase::getGain() {
 }
 
 Error_t CCombFilterBase::setGain(float gain) {
-    this->gain = gain;
+    this->gain = std::max(-1.0f, std::min(gain, 1.0f));
     return kFunctionIllegalCallError;
 }
 
