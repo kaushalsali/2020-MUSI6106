@@ -4,10 +4,10 @@
 
 #include "CombFilter.h"
 
-CCombFilterBase::CCombFilterBase(int delayLineLength, int numChannels, float g) :
+CCombFilterBase::CCombFilterBase(int delayLineLength, int numChannels, float gain) :
     delayLineLength(delayLineLength),
     numChannels(numChannels),
-    g(g),
+    gain(gain),
     delayLine(new AudioRingBuffer(delayLineLength, numChannels))
 {
     auto **zeros = new float *[numChannels];
@@ -26,17 +26,35 @@ CCombFilterBase::CCombFilterBase(int delayLineLength, int numChannels, float g) 
 CCombFilterBase::~CCombFilterBase() {
     delete delayLine;
     delayLine = nullptr;
-};
+}
 
-CCombFilterFIR::CCombFilterFIR(int delayLineLength, int numChannels, float g) : CCombFilterBase(delayLineLength,
-                                                                                                numChannels, g) {}
+float CCombFilterBase::getGain() {
+    return gain;
+}
+
+Error_t CCombFilterBase::setGain(float gain) {
+    this->gain = gain;
+    return kFunctionIllegalCallError;
+}
+
+int CCombFilterBase::getDelayLineLength() {
+    return delayLineLength;
+}
+
+Error_t CCombFilterBase::setDelayLineLength(int delayLineLength) {
+    this->delayLineLength = delayLineLength;
+    return kFunctionIllegalCallError;
+}
+
+CCombFilterFIR::CCombFilterFIR(int delayLineLength, int numChannels, float gain) : CCombFilterBase(delayLineLength,
+                                                                                                numChannels, gain) {}
 
 Error_t CCombFilterFIR::filter(float **ppfInputBuffer, float **ppfOutputBuffer, int iNumberOfFrames) {
     auto *sample = new float[numChannels];
     for (int i=0; i<iNumberOfFrames; i++) {
         delayLine->fetch(sample);
         for (int c=0; c<numChannels; c++) {
-            ppfOutputBuffer[c][i] = ppfInputBuffer[c][i] + g * sample[c];
+            ppfOutputBuffer[c][i] = ppfInputBuffer[c][i] + gain * sample[c];
         }
         delayLine->insert(ppfInputBuffer, i);
     }
@@ -45,15 +63,15 @@ Error_t CCombFilterFIR::filter(float **ppfInputBuffer, float **ppfOutputBuffer, 
     return kFunctionIllegalCallError;
 }
 
-CCombFilterIIR::CCombFilterIIR(int delayLineLength, int numChannels, float g) : CCombFilterBase(delayLineLength,
-                                                                                                numChannels, g) {}
+CCombFilterIIR::CCombFilterIIR(int delayLineLength, int numChannels, float gain) : CCombFilterBase(delayLineLength,
+                                                                                                numChannels, gain) {}
 
 Error_t CCombFilterIIR::filter(float **ppfInputBuffer, float **ppfOutputBuffer, int iNumberOfFrames) {
     auto *sample = new float[numChannels];
     for (int i=0; i<iNumberOfFrames; i++) {
         delayLine->fetch(sample);
         for (int c=0; c<numChannels; c++) {
-            ppfOutputBuffer[c][i] = ppfInputBuffer[c][i] + g * sample[c];
+            ppfOutputBuffer[c][i] = ppfInputBuffer[c][i] + gain * sample[c];
         }
         delayLine->insert(ppfOutputBuffer, i);
     }

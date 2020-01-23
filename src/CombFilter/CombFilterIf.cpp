@@ -63,6 +63,7 @@ Error_t CCombFilterIf::create( CCombFilterIf*& pCCombFilter)
 
 Error_t CCombFilterIf::destroy (CCombFilterIf*& pCCombFilter)
 {
+    pCCombFilter->reset();
     delete pCCombFilter;
     pCCombFilter = nullptr;
     return kNoError;
@@ -84,6 +85,8 @@ Error_t CCombFilterIf::init( CombFilterType_t eFilterType, float fMaxDelayLength
 
 Error_t CCombFilterIf::reset ()
 {
+    delete m_pCCombFilter;
+    m_pCCombFilter = nullptr;
     return kNoError;
 }
 
@@ -95,10 +98,28 @@ Error_t CCombFilterIf::process( float **ppfInputBuffer, float **ppfOutputBuffer,
 
 Error_t CCombFilterIf::setParam( FilterParam_t eParam, float fParamValue )
 {
-    return kNoError;
+    switch(eParam) {
+        case kParamGain:
+            m_pCCombFilter->setGain(fParamValue);
+            break;
+        case kParamDelay:
+            m_pCCombFilter->setDelayLineLength((int) fParamValue);
+            break;
+        case kNumFilterParams: // Not needed for now
+            break;
+    }
+        return kNoError;
 }
 
 float CCombFilterIf::getParam( FilterParam_t eParam ) const
 {
+    switch(eParam) {
+        case kParamGain:
+            return m_pCCombFilter->getGain();
+        case kParamDelay:
+            return (float) m_pCCombFilter->getDelayLineLength();
+        case kNumFilterParams: // Not needed for now
+            break;
+    }
     return 0;
 }

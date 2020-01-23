@@ -14,28 +14,33 @@ class AudioRingBuffer;
 // Abstract class
 class CCombFilterBase {
 public:
-    CCombFilterBase(int delayLineLength, int numChannels, float g=0.5);
+    CCombFilterBase(int delayLineLength, int numChannels, float gain=0.5);
     virtual ~CCombFilterBase();
     virtual Error_t filter(float **ppfInputBuffer, float **ppfOutputBuffer, int iNumberOfFrames) = 0;
+    float getGain();
+    Error_t setGain(float gain);
+    int getDelayLineLength();
+    Error_t setDelayLineLength(int delayLineLength);
+
 
 protected:
     int delayLineLength;
     int numChannels;
-    float g;
+    float gain;
     AudioRingBuffer *delayLine;
 };
 
 
 class CCombFilterFIR : public CCombFilterBase {
 public:
-    CCombFilterFIR(int delayLineLength, int numChannels, float g=0.5);
+    CCombFilterFIR(int delayLineLength, int numChannels, float gain=0.5);
     Error_t filter(float **ppfInputBuffer, float **ppfOutputBuffer, int iNumberOfFrames) override;
 };
 
 
 class CCombFilterIIR : public CCombFilterBase {
 public:
-    CCombFilterIIR(int delayLineLength, int numChannels, float g = 0.5);
+    CCombFilterIIR(int delayLineLength, int numChannels, float gain=0.5);
     Error_t filter(float **ppfInputBuffer, float **ppfOutputBuffer, int iNumberOfFrames) override;
 };
 
