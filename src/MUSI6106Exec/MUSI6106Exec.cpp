@@ -5,6 +5,7 @@
 
 #include "AudioFileIf.h"
 #include "CombFilterIf.h"
+#include "CombTests.h"
 
 using std::cout;
 using std::endl;
@@ -18,7 +19,6 @@ int main(int argc, char* argv[]) {
     std::string sInputFilePath;                 //!< file paths
     std::string sOutputFilePath;
     float delayTimeInSec;
-    float g;
 
     static const int kBlockSize = 1024;
 
@@ -39,6 +39,17 @@ int main(int argc, char* argv[]) {
     //////////////////////////////////////////////////////////////////////////////
     // parse command line arguments
 
+    if (argc == 1) {
+        std::cout << "------------------------------" << std::endl;
+        std::cout << "\tTEST MODE" << std::endl;
+        std::cout << "------------------------------" << std::endl << std::endl;
+        test1();
+        test2();
+        test3();
+        test4();
+        test5();
+        return 0;
+    }
     if (argc > 1) {
         sInputFilePath = argv[1];
     }
@@ -135,7 +146,6 @@ int main(int argc, char* argv[]) {
 
 }
 
-
 void     showClInfo()
 {
     cout << "GTCMT MUSI6106 Executable" << endl;
@@ -144,4 +154,3 @@ void     showClInfo()
 
     return;
 }
-
