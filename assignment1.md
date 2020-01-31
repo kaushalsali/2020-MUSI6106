@@ -10,13 +10,13 @@
 ##### Absolute Error plots for real world audio can be found at:
 https://github.com/kaushalsali/2020-MUSI6106/blob/ass1/test/Ass1/plots
 
-##### MSE for cello-double.wav:
+##### MSE for cello-double.wav (Delay=0.1s, Gain=0.5):
 - FIR: 1.1640032e-10  
 - IIR: 3.0795544e-10  
 
-##### MSE for speech-male.wav:
+##### MSE for singing-female.wav (Delay=0.3s, Gain=0.1):
 - FIR: 1.1640032e-10   
-- IIR: 2.5988967e-09  
+- IIR: 2.520203e-10  
 
 ### Notes:
 - Python test scripts for comb filter and error calculation are in `/test/Ass1`.
