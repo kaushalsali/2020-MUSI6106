@@ -71,12 +71,20 @@ int main(int argc, char* argv[]) {
         }
         sOutputFilePath = sInputFilePath.substr(0, sInputFilePath.size() - 4).append("_" + arg + "_cpp.wav");
     }
-    if (argc > 3)
+    if (argc > 3) {
         delayTimeInSec = atof(argv[3]);
+        if (delayTimeInSec < 0)
+            std::cout << "arg3: Delay time cannot be negative. Will be set to 0." << std::endl;
+    }
     else
         delayTimeInSec = 0.01;
-    if (argc > 4)
+    if (argc > 4) {
         gain = atof(argv[4]);
+        if (gain > 1)
+            std::cout << "arg4: Gain cannot be > 1. Will be set to 1." << std::endl;
+        else if (gain < -1)
+            std::cout << "arg4: Gain cannot be < -1. Will be set to -1." << std::endl;
+    }
     else
         gain = 0.5;
 
