@@ -12,16 +12,23 @@ class CRingBuffer
 {
 public:
     explicit CRingBuffer (int iBufferLengthInSamples) :
-        m_iBuffLength(iBufferLengthInSamples)
+        m_iBuffLength(iBufferLengthInSamples),
+        read(0),
+        write(0),
+        empty(true),
+        full(false)
     {
         assert(iBufferLengthInSamples > 0);
 
         // allocate and init
+        buffer = new T[iBufferLengthInSamples];
     }
 
     virtual ~CRingBuffer ()
     {
         // free memory
+        delete[] buffer;
+        buffer = nullptr;
     }
 
     /*! add a new value of type T to write index and increment write index
@@ -30,6 +37,17 @@ public:
     */
     void putPostInc (T tNewValue)
     {
+        if (!full) {
+            buffer[write] = tNewValue;
+            write = (write + 1) % currentBufferLength;
+            if (empty)
+                empty = false;
+            if (read == write)
+                full = true;
+        }
+        else {
+            std::cout << "Buffer Full";
+        }
     }
 
     /*! add new values of type T to write index and increment write index
@@ -152,5 +170,33 @@ private:
     CRingBuffer(const CRingBuffer& that);
 
     int m_iBuffLength;              //!< length of the internal buffer
+    int currentBufferLength;
+
+    T *buffer;
+    int read;
+    int write;
+    bool empty;
+    bool full;
 };
 #endif // __RingBuffer_hdr__
+
+/*
+ *
+class AudioRingBuffer {  // Note: Ideally should be placed separately outside of CombFilter folder.
+public:
+    AudioRingBuffer(int bufferLength, int numChannels);
+    ~AudioRingBuffer();
+    Error_t insert(float **audioBuffer, int sampleIndex);
+    Error_t fetch(float *sampleBuffer);
+    Error_t remove();
+
+private:
+    int bufferLength;
+    int numChannels;
+    float **buffer;
+    int read;
+    int write;
+    bool empty;
+    bool full;
+};
+ */
