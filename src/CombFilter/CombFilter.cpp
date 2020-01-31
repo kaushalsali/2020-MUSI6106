@@ -42,7 +42,7 @@ int CCombFilterBase::getDelayLineLength() {
 }
 
 Error_t CCombFilterBase::setDelayLineLength(int delayLineLength) {
-    this->delayLineLength = delayLineLength;
+    this->delayLineLength = std::max(1, delayLineLength);
     return kFunctionIllegalCallError;
 }
 

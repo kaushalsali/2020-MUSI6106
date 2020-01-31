@@ -72,7 +72,7 @@ Error_t CCombFilterIf::destroy (CCombFilterIf*& pCCombFilter)
 Error_t CCombFilterIf::init( CombFilterType_t eFilterType, float fMaxDelayLengthInS, float fSampleRateInHz, int iNumChannels )
 {
     m_fSampleRate = fSampleRateInHz;
-    int delayLength =  std::min(0, (int)(fMaxDelayLengthInS * fSampleRateInHz));
+    int delayLength =  std::max(1, (int)(fMaxDelayLengthInS * fSampleRateInHz));
     if (eFilterType == kCombFIR) {
         m_pCCombFilter = new CCombFilterFIR(delayLength, iNumChannels);
     }
@@ -103,7 +103,7 @@ Error_t CCombFilterIf::setParam( FilterParam_t eParam, float fParamValue )
             m_pCCombFilter->setGain(fParamValue);
             break;
         case kParamDelay:
-            m_pCCombFilter->setDelayLineLength(std::min(0, (int)(fParamValue * m_fSampleRate)));
+            m_pCCombFilter->setDelayLineLength((int)(fParamValue * m_fSampleRate));
             break;
         case kNumFilterParams: // Not needed for now
             break;
