@@ -402,5 +402,89 @@ int test4() {
 
 int test5() {
 
+
+    std::cout << "---------------" << std::endl;
+    std::cout << "Running Test 4: Negative Delay and Gain" << std::endl;
+    std::cout << "---------------" << std::endl << std::endl;
+    float delayTimeInSec = -1; // Delay line length = 441 (fs = 44100)
+    float gain = 500;
+    std::cout << "Delay: " << delayTimeInSec << "s Gain: " << gain << std::endl << std::endl;
+
+
+    std::string sInputFilePath = "test_audio/sine100.wav"; // 441 samples = 1 cycle (fs = 44100)
+    std::string sOutputFilePath = "test_audio/test5_sine100_out.wav";
+
+    static const int kBlockSize = 1024;
+
+    clock_t time = 0;
+
+    float **ppfInputAudioData = 0;
+    float **ppfOutputAudioData = 0;
+
+    CAudioFileIf *phInputAudioFile = 0;
+    CAudioFileIf *phOutputAudioFile = 0;
+
+    CAudioFileIf::FileSpec_t stFileSpec;
+
+    CCombFilterIf *pCombFilter = 0;
+    CCombFilterIf::CombFilterType_t filterType = CCombFilterIf::kCombFIR;
+
+    // Open the input and output text file
+    CAudioFileIf::create(phInputAudioFile);
+    phInputAudioFile->openFile(sInputFilePath, CAudioFileIf::kFileRead);
+    if (!phInputAudioFile->isOpen()) {
+        std::cout << "Input wav file open error!";
+        return -1;
+    }
+    phInputAudioFile->getFileSpec(stFileSpec);
+
+    CAudioFileIf::create(phOutputAudioFile);
+    phOutputAudioFile->openFile(sOutputFilePath, CAudioFileIf::kFileWrite, &stFileSpec);
+    if (!phOutputAudioFile->isOpen()) {
+        std::cout << "Output wav file open error!";
+        return -1;
+    }
+
+    // Allocate memory for audio i/o buffers
+    ppfInputAudioData = new float *[stFileSpec.iNumChannels];
+    ppfOutputAudioData = new float *[stFileSpec.iNumChannels];
+    for (int i = 0; i < stFileSpec.iNumChannels; i++) {
+        ppfInputAudioData[i] = new float[kBlockSize];
+        ppfOutputAudioData[i] = new float[kBlockSize];
+    }
+
+    // Create Comb Filter
+    CCombFilterIf::create(pCombFilter);
+    pCombFilter->init(filterType, delayTimeInSec, stFileSpec.fSampleRateInHz, stFileSpec.iNumChannels);
+    pCombFilter->setParam(CCombFilterIf::kParamGain, gain);
+
+    // Read, filter and write audio
+    time = clock();
+    long long blockSize = kBlockSize;
+    while (!phInputAudioFile->isEof()) {
+        phInputAudioFile->readData(ppfInputAudioData, blockSize);
+        pCombFilter->process(ppfInputAudioData, ppfOutputAudioData, (int)blockSize);
+        phOutputAudioFile->writeData(ppfOutputAudioData, blockSize);
+    }
+    std::cout << "Reading and writing done in: \t" << (clock() - time)*1.F / CLOCKS_PER_SEC << " seconds." << std::endl;
+    std::cout << "Output: " << sOutputFilePath << std::endl;
+
+    // Clean-up
+    phInputAudioFile->closeFile();
+    phOutputAudioFile->closeFile();
+    CAudioFileIf::destroy(phInputAudioFile);
+    CAudioFileIf::destroy(phOutputAudioFile);
+    for (int i = 0; i < stFileSpec.iNumChannels; i++) {
+        delete[] ppfInputAudioData[i];
+        delete[] ppfOutputAudioData[i];
+    }
+    delete[] ppfInputAudioData;
+    delete[] ppfOutputAudioData;
+    ppfInputAudioData = nullptr;
+    ppfOutputAudioData = nullptr;
+
+    std::cout << std::endl << "Test 4 completed" << std::endl;
+    std::cout << "---------------" << std::endl << std::endl;
+    return 0;
     return 0;
 }
