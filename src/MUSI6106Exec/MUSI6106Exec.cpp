@@ -18,7 +18,9 @@ void    showClInfo ();
 int main(int argc, char* argv[]) {
     std::string sInputFilePath;                 //!< file paths
     std::string sOutputFilePath;
+
     float delayTimeInSec;
+    float gain;
 
     static const int kBlockSize = 1024;
 
@@ -73,9 +75,14 @@ int main(int argc, char* argv[]) {
         delayTimeInSec = atof(argv[3]);
     else
         delayTimeInSec = 0.01;
+    if (argc > 4)
+        gain = atof(argv[4]);
+    else
+        gain = 0.5;
 
     std::cout << "Filter Type: " << argv[2] << std::endl;
-    std::cout << "Delay: " << delayTimeInSec << std::endl;
+    std::cout << "Delay (sec): " << delayTimeInSec << std::endl;
+    std::cout << "Gain: " << gain << std::endl;
 
     //////////////////////////////////////////////////////////////////////////////
     // open the input wave file
@@ -113,6 +120,7 @@ int main(int argc, char* argv[]) {
 
     CCombFilterIf::create(pCombFilter);
     pCombFilter->init(filterType, delayTimeInSec, stFileSpec.fSampleRateInHz, stFileSpec.iNumChannels);
+    pCombFilter->setParam(CCombFilterIf::FilterParam_t::kParamGain, gain);
 
     //////////////////////////////////////////////////////////////////////////////
     // Read, filter and write audio
@@ -129,6 +137,7 @@ int main(int argc, char* argv[]) {
     //////////////////////////////////////////////////////////////////////////////
     // clean-up
 
+    CCombFilterIf::destroy(pCombFilter);
     phInputAudioFile->closeFile();
     phOutputAudioFile->closeFile();
     CAudioFileIf::destroy(phInputAudioFile);
