@@ -35,5 +35,10 @@
 bld
 /lib/debug/*.exp
 
-# MacOS files
+# Other files
 .DS_Store
+.idea/
+cmake-build-debug/
+test/Ass1/
+
+
