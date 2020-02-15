@@ -7,12 +7,13 @@
 
 /*! \brief implement a circular buffer of type T
 */
-template <class T> 
+template <class T>
 class CRingBuffer
 {
 public:
     explicit CRingBuffer (int iBufferLengthInSamples) :
         m_iBuffLength(iBufferLengthInSamples),
+        currentBufferLength(iBufferLengthInSamples),
         read(0),
         write(0),
         empty(true),
@@ -38,7 +39,7 @@ public:
     void putPostInc (T tNewValue)
     {
         if (!full) {
-            buffer[write] = tNewValue;
+            put(tNewValue);
             write = (write + 1) % currentBufferLength;
             if (empty)
                 empty = false;
@@ -46,7 +47,7 @@ public:
                 full = true;
         }
         else {
-            std::cout << "Buffer Full";
+            std::cout << "Buffer Full" << std::endl; //TODO: Throw error instead
         }
     }
 
@@ -55,16 +56,32 @@ public:
     \param iLength: number of values
     \return void
     */
-    void putPostInc (const T* ptNewBuff, int iLength)
+    void putPostInc (const T* ptNewBuff, int& iLength) //At the end iLength will contain number of samples that were actually inserted.
     {
+        if (!full) {
+            for (int i = 0; i < iLength; i++) {
+                buffer[write] = ptNewBuff[i];
+                write = (write + 1) % currentBufferLength;
+                if (empty)
+                    empty = false;
+                if (read == write) {
+                    full = true;
+                    iLength = i;
+                    break;
+                }
+            }
+        }
+        else
+            iLength = 0;
     }
 
     /*! add a new value of type T to write index
     \param tNewValue the new value
     \return void
     */
-    void put(T tNewValue)
+    void put(T tNewValue)  // CAUTION: Overwrite possible
     {
+        buffer[write] = tNewValue;
     }
 
     /*! add new values of type T to write index
@@ -72,16 +89,28 @@ public:
     \param iLength: number of values
     \return void
     */
-    void put(const T* ptNewBuff, int iLength)
+    void put(const T* ptNewBuff, int iLength) // CAUTION: Overwrite possible
     {
+        for (int i=0; i<iLength; i++)
+            buffer[(write + i) % currentBufferLength ] = ptNewBuff[i];
     }
-    
+
     /*! return the value at the current read index and increment the read pointer
     \return float the value from the read index
     */
     T getPostInc ()
     {
-        return static_cast<T>(-1);
+        if (!empty) {
+            T sample = buffer[read];
+            read = (read + 1) % currentBufferLength;
+            if (full)
+                full = false;
+            if (read == write)
+                empty = true;
+            return sample;
+        }
+        else
+            std::cout<< "Buffer Empty" << std::endl; // TODO: Throw Error or something
     }
 
     /*! return the values starting at the current read index and increment the read pointer
@@ -89,8 +118,23 @@ public:
     \param iLength: number of values
     \return void
     */
-    void getPostInc (T* ptBuff, int iLength)
+    void getPostInc (T* ptBuff, int& iLength)
     {
+        if (!empty) {
+            for (int i = 0; i < iLength; i++) {
+                ptBuff[i] = buffer[read];
+                read = (read + 1) % currentBufferLength;
+                if (full)
+                    full = false;
+                if (read == write) {
+                    empty = true;
+                    iLength = i;
+                    break;
+                }
+            }
+        }
+        else
+            iLength = 0;
     }
 
     /*! return the value at the current read index
@@ -99,7 +143,15 @@ public:
     */
     T get (float fOffset = 0.f) const
     {
-        return static_cast<T>(-1);
+        float fracPart, intPart;
+        fracPart = modf(fOffset, &intPart);
+        T x = buffer[(int)(read + intPart) % currentBufferLength];
+        if (fracPart == 0.f)
+            return x;
+        else {
+            T y = buffer[(int)(read + intPart + (fracPart / abs(fracPart))) % currentBufferLength];
+            return (1 - abs(fracPart)) * x + abs(fracPart) * y;
+        }
     }
 
     /*! return the values starting at the current read index
@@ -109,13 +161,22 @@ public:
     */
     void get (T* ptBuff, int iLength) const
     {
+        for (int i=0; i<iLength; i++)
+            ptBuff[i] = buffer[(read + i) % currentBufferLength];
     }
-    
+
     /*! set buffer content and indices to 0
     \return void
     */
     void reset ()
     {
+        for (int i=0; i<m_iBuffLength; i++) {
+            buffer[i] = 0;
+        }
+        read = 0;
+        write = 0;
+        empty = true;
+        full = false;
     }
 
     /*! return the current index for writing/put
@@ -165,6 +226,20 @@ public:
     {
         return -1;
     }
+
+    void show() {
+        for (int i=0; i<m_iBuffLength; i++) {
+            if (i == read)
+                std::cout << "(r)";
+            if (i == write)
+                std::cout << "(w)";
+
+            std::cout << buffer[i] << "--";
+        }
+        std::cout << std::endl;
+        std::cout << "read: " << read << "  write: " << write << std::endl;
+    }
+
 private:
     CRingBuffer ();
     CRingBuffer(const CRingBuffer& that);
@@ -180,23 +255,6 @@ private:
 };
 #endif // __RingBuffer_hdr__
 
-/*
- *
-class AudioRingBuffer {  // Note: Ideally should be placed separately outside of CombFilter folder.
-public:
-    AudioRingBuffer(int bufferLength, int numChannels);
-    ~AudioRingBuffer();
-    Error_t insert(float **audioBuffer, int sampleIndex);
-    Error_t fetch(float *sampleBuffer);
-    Error_t remove();
 
-private:
-    int bufferLength;
-    int numChannels;
-    float **buffer;
-    int read;
-    int write;
-    bool empty;
-    bool full;
-};
- */
+
+
