@@ -184,15 +184,16 @@ public:
     */
     int getWriteIdx () const
     {
-        return -1;
+        return write;
     }
 
     /*! move the write index to a new position
     \param iNewWriteIdx: new position
     \return void
     */
-    void setWriteIdx (int iNewWriteIdx)
+    void setWriteIdx (int iNewWriteIdx)  // CAUTION: Overwrite possible
     {
+        write = iNewWriteIdx;
     }
 
     /*! return the current index for reading/get
@@ -200,15 +201,16 @@ public:
     */
     int getReadIdx () const
     {
-        return -1;
+        return read;
     }
 
     /*! move the read index to a new position
     \param iNewReadIdx: new position
     \return void
     */
-    void setReadIdx (int iNewReadIdx)
+    void setReadIdx (int iNewReadIdx)  // CAUTION: Overwrite possible
     {
+        read = iNewReadIdx;
     }
 
     /*! returns the number of values currently buffered (note: 0 could also mean the buffer is full!)
@@ -216,7 +218,16 @@ public:
     */
     int getNumValuesInBuffer () const
     {
-        return -1;
+        if (write == read) {
+            if (full)
+                return currentBufferLength;
+            else if (empty)
+                return 0;
+        }
+        else if (read > write)
+            return currentBufferLength - (read - write);
+        else
+            return write - read;
     }
 
     /*! returns the length of the internal buffer
@@ -224,7 +235,7 @@ public:
     */
     int getLength () const
     {
-        return -1;
+        return m_iBuffLength;
     }
 
     void show() {
