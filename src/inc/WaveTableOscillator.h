@@ -21,9 +21,22 @@ public:
     };
 
     explicit WaveTableOscillator (int waveTableSize);
+
     Error_t setWavefromType(Waveform waveformType);
+    WaveTableOscillator::Waveform getWavefromType() const;
+
+    /*
+     * Sets the frequency at which the WaveTableOscillator will generate a waveform.
+     * Internally updates sampleDelta (the factor by which the wave table updates it's current index in the waveform).
+     */
     Error_t setFrequency(float frequencyInHz);
+    float getFrequency() const;
+
     Error_t setSampleRate(int sampleRate);
+    int getSampleRate() const;
+
+    float getCurrentSampleIndex() const;
+    float getSampleDelta() const;
     Error_t updateWaveTable();
     Error_t init(Waveform waveformType, float frequencyInHz, int sampleRateInHz);
     float getNextSample();
@@ -34,7 +47,7 @@ private:
     Waveform m_waveformType;
     float m_frequency;
     int m_sampleRate;
-    float m_currentSample;
+    float m_currentSampleIndex;
     float m_sampleDelta;
 };
 
