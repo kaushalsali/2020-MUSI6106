@@ -9,24 +9,26 @@
 
 #include "ErrorDef.h"
 #include "RingBuffer.h"
+#include "WaveTableOscillator.h"
 
 
-class VibratoIf
+class Vibrato
 {
 public:
-    VibratoIf(int delayInSec, int modulationWidthInSec, int sampleRateInHz);
-    ~VibratoIf();
+    Vibrato(int delayInSec, int modulationWidthInSec, int sampleRateInHz,  int numChannels);
+    ~Vibrato();
     float getParam();
     Error_t setParam();
-    Error_t process(float **ppfInputBuffer, float **ppfOutputBuffer, int iNumberOfFrames);
+    Error_t process(float **ppfInputBuffer, float **ppfOutputBuffer, int numFrames);
 
 
 private:
-    VibratoIf();
-    CRingBuffer<float>* ringBuffer;
-    //LFO* lfo;
-    int delayInSec;
-    int widthInSec;
-    int sampleRate;
+    Vibrato();
+    CRingBuffer<float>** m_ppBuffer;
+    WaveTableOscillator* m_pLFO;
+    int m_delayInSec;
+    int m_widthInSec;
+    int m_sampleRate;
+    int m_numChannels;
 };
 
