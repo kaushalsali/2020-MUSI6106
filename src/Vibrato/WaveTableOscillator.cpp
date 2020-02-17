@@ -5,6 +5,8 @@
 #include "WaveTableOscillator.h"
 #include "Synthesis.h"
 
+#include<iostream>
+
 
 WaveTableOscillator::WaveTableOscillator(int waveTableSize) :
         m_waveTableSize(waveTableSize),
@@ -20,7 +22,7 @@ WaveTableOscillator::WaveTableOscillator(int waveTableSize) :
 float WaveTableOscillator::getNextSample()
 {
     auto sample = m_pWaveTable->get(m_currentSampleIndex);
-    m_currentSampleIndex = fmod((m_currentSampleIndex + m_sampleDelta), m_waveTableSize - 1);
+    m_currentSampleIndex = fmod((m_currentSampleIndex + m_sampleDelta), m_waveTableSize);
     return sample;
 }
 
@@ -41,8 +43,8 @@ WaveTableOscillator::Waveform WaveTableOscillator::getWavefromType() const
 Error_t WaveTableOscillator::setFrequency(float frequencyInHz)
 {
     m_frequency = frequencyInHz;
-    auto cyclesPerSample = m_frequency / (float)m_sampleRate;
-    m_sampleDelta = (float)m_waveTableSize * cyclesPerSample;
+    m_sampleDelta = (float)m_waveTableSize * m_frequency / (float)m_sampleRate;
+    std::cout << "m_sampleDelta = " << m_sampleDelta << std::endl; //TODO: Delete
     return kNoError;
 }
 

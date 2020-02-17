@@ -15,7 +15,14 @@
 class Vibrato
 {
 public:
-    Vibrato(int delayInSec, int modulationWidthInSec, int sampleRateInHz,  int numChannels);
+
+    enum VibratoParams {
+        delayInSec,
+        widthInSec,
+        LFOFreqInHz
+    };
+
+    Vibrato(float delayInSec, float modulationWidthInSec, float LFOFreqInHz, int sampleRateInHz, int numChannels);
     ~Vibrato();
     float getParam();
     Error_t setParam();
@@ -25,9 +32,12 @@ public:
 private:
     Vibrato();
     CRingBuffer<float>** m_ppBuffer;
-    WaveTableOscillator* m_pLFO;
-    int m_delayInSec;
-    int m_widthInSec;
+    WaveTableOscillator* m_pLFO; //TODO: Give option to user to pass object
+    float m_LFOFreqInHz;
+    float m_delayInSec;
+    int m_delayInSamples;
+    float m_widthInSec;
+    int m_widthInSamples;
     int m_sampleRate;
     int m_numChannels;
 };
