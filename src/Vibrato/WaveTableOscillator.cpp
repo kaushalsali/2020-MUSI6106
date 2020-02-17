@@ -20,7 +20,7 @@ WaveTableOscillator::WaveTableOscillator(int waveTableSize) :
 float WaveTableOscillator::getNextSample()
 {
     auto sample = m_pWaveTable->get(m_currentSampleIndex);
-    m_currentSampleIndex = fmod((m_currentSampleIndex + m_sampleDelta), m_waveTableSize);
+    m_currentSampleIndex = fmod((m_currentSampleIndex + m_sampleDelta), m_waveTableSize - 1);
     return sample;
 }
 
@@ -80,12 +80,15 @@ float WaveTableOscillator::getSampleDelta() const
 
 Error_t WaveTableOscillator::updateWaveTable()
 {
+    // TODO: Is it better to update sampleDelta here??
+    // TODO: Mechanism to check what has been updated and accordingl
     // Generate waveform and fill WaveTable
     auto* waveform = new float[m_waveTableSize];
 
     // For sampling the waveform such that wavetable size equals one period.
     // Note: This can also be done with arbitrary values. As long as 'Fs/F = wavetable_size' holds,
     // you'll get one period in wavetable_size samples from sin func.
+    //TODO: Use arbitrary const values : what if  m_waveTableSize or m_frequency are zero???;
     auto waveformSampleRate = (float)m_waveTableSize * m_frequency;
 
     switch (m_waveformType) {
@@ -107,8 +110,8 @@ Error_t WaveTableOscillator::updateWaveTable()
 Error_t WaveTableOscillator::init(WaveTableOscillator::Waveform waveformType, float frequencyInHz, int sampleRateInHz)
 {
     setWavefromType(waveformType);
-    setFrequency(frequencyInHz);
     setSampleRate(sampleRateInHz);
+    setFrequency(frequencyInHz);
     updateWaveTable();
 }
 

@@ -23,7 +23,7 @@ SUITE(WaveTable) {
         WaveTableOscillatorData() :
             m_tableSize(128),
             m_waveform(WaveTableOscillator::Waveform::Sine),
-            m_freq(440.0f),
+            m_freq(441.0f),
             m_sampleRate(44100)
         {
             m_pWaveTable = new WaveTableOscillator(m_tableSize);
@@ -44,7 +44,9 @@ SUITE(WaveTable) {
     {
         std::cout << "Hello Test" <<std::endl;
         m_pWaveTable->init(m_waveform, m_freq, m_sampleRate);
-
+        for (int i=0; i<128*5; i++) {
+            // std::cout << m_pWaveTable->getCurrentSampleIndex() << " -- " << m_pWaveTable->getNextSample() << std::endl;
+        }
     }
 }
 
