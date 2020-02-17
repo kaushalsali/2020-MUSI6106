@@ -12,7 +12,7 @@
 #include <cassert>
 
 #include "UnitTest++.h"
-#include "WaveTableOscillator.h"
+#include "LFO.h"
 
 
 
@@ -22,11 +22,11 @@ SUITE(WaveTable) {
     public:
         WaveTableOscillatorData() :
             m_tableSize(128),
-            m_waveform(WaveTableOscillator::Waveform::Sine),
+            m_waveform(LFO::Waveform::Sine),
             m_freq(441.0f),
             m_sampleRate(44100)
         {
-            m_pWaveTable = new WaveTableOscillator(m_tableSize);
+            m_pWaveTable = new LFO(m_tableSize);
         }
 
         ~WaveTableOscillatorData() {
@@ -36,8 +36,8 @@ SUITE(WaveTable) {
         int m_tableSize;
         float m_freq;
         int m_sampleRate;
-        WaveTableOscillator::Waveform m_waveform;
-        WaveTableOscillator* m_pWaveTable;
+        LFO::Waveform m_waveform;
+        LFO* m_pWaveTable;
     };
 
     TEST_FIXTURE(WaveTableOscillatorData, Test1) //TODO: Rename Test

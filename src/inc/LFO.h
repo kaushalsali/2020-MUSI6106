@@ -2,8 +2,8 @@
 // Created by Kaushal Sali on 16/02/20.
 //
 
-#ifndef MUSI6106_WAVETABLEOSCILLATOR_H
-#define MUSI6106_WAVETABLEOSCILLATOR_H
+#ifndef MUSI6106_LFO_H
+#define MUSI6106_LFO_H
 
 #include "ErrorDef.h"
 #include "RingBuffer.h"
@@ -11,7 +11,7 @@
 
 
 
-class WaveTableOscillator {
+class LFO {
 public:
     enum Waveform
     {
@@ -20,13 +20,13 @@ public:
         Saw,
     };
 
-    explicit WaveTableOscillator (int waveTableSize);
+    explicit LFO (int waveTableSize);
 
     Error_t setWavefromType(Waveform waveformType);
-    WaveTableOscillator::Waveform getWavefromType() const;
+    LFO::Waveform getWavefromType() const;
 
     /*
-     * Sets the frequency at which the WaveTableOscillator will generate a waveform.
+     * Sets the frequency at which the LFO will generate a waveform.
      * Internally updates sampleDelta (the factor by which the wave table updates it's current index in the waveform).
      */
     Error_t setFrequency(float frequencyInHz);
@@ -53,4 +53,4 @@ private:
 
 
 
-#endif //MUSI6106_WAVETABLEOSCILLATOR_H
+#endif //MUSI6106_LFO_H

@@ -1,6 +1,6 @@
 #include "Vibrato.h"
 #include "RingBuffer.h"
-#include "WaveTableOscillator.h"
+#include "LFO.h"
 
 #include<iostream>
 
@@ -26,8 +26,8 @@ Vibrato::Vibrato(float delayInSec, float modulationWidthInSec, float LFOFreqInHz
     zeros = nullptr;
 
     // Create LFO
-    m_pLFO = new WaveTableOscillator(1024);
-    m_pLFO->init(WaveTableOscillator::Waveform::Sine, LFOFreqInHz, sampleRateInHz);
+    m_pLFO = new LFO(1024);
+    m_pLFO->init(LFO::Waveform::Sine, LFOFreqInHz, sampleRateInHz);
 }
 
 
@@ -54,6 +54,23 @@ Error_t Vibrato::process(float **ppfInputBuffer, float **ppfOutputBuffer, int nu
     }
     return kNoError;
 }
+
+//TODO: Remove after debugging
+//Error_t Vibrato::process(float **ppfInputBuffer, float **ppfOutputBuffer, int numFrames) {
+//    std::cout << "---------------------------------------------------" << std::endl;
+//    for (int i = 0; i < numFrames; i++)
+//    {
+//        auto d = m_pLFO->getCurrentSampleIndex();
+//        auto v = m_pLFO->getNextSample();
+//        std::cout << d << "--" << v << std::endl;
+//        for(int c = 0; c < m_numChannels; c++)
+//        {
+//            ppfOutputBuffer[c][i] = v;
+//        }
+//    }
+//    return kNoError;
+//}
+
 
 
 

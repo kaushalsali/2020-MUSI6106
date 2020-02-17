@@ -9,7 +9,7 @@
 
 #include "ErrorDef.h"
 #include "RingBuffer.h"
-#include "WaveTableOscillator.h"
+#include "LFO.h"
 
 
 class Vibrato
@@ -32,7 +32,7 @@ public:
 private:
     Vibrato();
     CRingBuffer<float>** m_ppBuffer;
-    WaveTableOscillator* m_pLFO; //TODO: Give option to user to pass object
+    LFO* m_pLFO; //TODO: Give option to user to pass object
     float m_LFOFreqInHz;
     float m_delayInSec;
     int m_delayInSamples;

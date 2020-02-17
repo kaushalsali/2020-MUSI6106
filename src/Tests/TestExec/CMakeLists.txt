@@ -57,7 +57,7 @@ source_group (Tests FILES ${APP}_SOURCES_TEST ${APP}_HEADERS_TEST)
 add_inc_directories ()
 
 if (WITH_TESTS)
-    add_executable(${APP} ${${APP}_SOURCES} ${${APP}_HEADERS} ${${APP}_SOURCES_TEST} ${${APP}_HEADERS_TEST} ../../inc/WaveTableOscillator.h)
+    add_executable(${APP} ${${APP}_SOURCES} ${${APP}_HEADERS} ${${APP}_SOURCES_TEST} ${${APP}_HEADERS_TEST} ../../inc/LFO.h)
 
     # link the libraries
     target_link_libraries(${APP} ${LIB} ${TestLIB} ${FftLIB} ${FilterLIB} ${DtwLIB} ${VibratoLIB} ${AudioLIB} ${SndLIB} ${OS_LIBS})

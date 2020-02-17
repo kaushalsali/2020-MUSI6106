@@ -2,13 +2,13 @@
 // Created by Kaushal Sali on 15/02/20.
 //
 
-#include "WaveTableOscillator.h"
+#include "LFO.h"
 #include "Synthesis.h"
 
 #include<iostream>
 
 
-WaveTableOscillator::WaveTableOscillator(int waveTableSize) :
+LFO::LFO(int waveTableSize) :
         m_waveTableSize(waveTableSize),
         m_pWaveTable(new CRingBuffer<float> (waveTableSize)),
         m_frequency(0.0f),
@@ -19,7 +19,7 @@ WaveTableOscillator::WaveTableOscillator(int waveTableSize) :
 }
 
 
-float WaveTableOscillator::getNextSample()
+float LFO::getNextSample()
 {
     auto sample = m_pWaveTable->get(m_currentSampleIndex);
     m_currentSampleIndex = fmod((m_currentSampleIndex + m_sampleDelta), m_waveTableSize);
@@ -27,20 +27,20 @@ float WaveTableOscillator::getNextSample()
 }
 
 
-Error_t WaveTableOscillator::setWavefromType(Waveform waveformType)
+Error_t LFO::setWavefromType(Waveform waveformType)
 {
     m_waveformType = waveformType;
     return kNoError;
 }
 
 
-WaveTableOscillator::Waveform WaveTableOscillator::getWavefromType() const
+LFO::Waveform LFO::getWavefromType() const
 {
     return m_waveformType;
 }
 
 
-Error_t WaveTableOscillator::setFrequency(float frequencyInHz)
+Error_t LFO::setFrequency(float frequencyInHz)
 {
     m_frequency = frequencyInHz;
     m_sampleDelta = (float)m_waveTableSize * m_frequency / (float)m_sampleRate;
@@ -49,38 +49,38 @@ Error_t WaveTableOscillator::setFrequency(float frequencyInHz)
 }
 
 
-float WaveTableOscillator::getFrequency() const
+float LFO::getFrequency() const
 {
     return m_frequency;
 }
 
 
-Error_t WaveTableOscillator::setSampleRate(int sampleRateInHz)
+Error_t LFO::setSampleRate(int sampleRateInHz)
 {
     m_sampleRate = sampleRateInHz;
     return kNoError;
 }
 
 
-int WaveTableOscillator::getSampleRate() const
+int LFO::getSampleRate() const
 {
     return m_sampleRate;
 }
 
 
-float WaveTableOscillator::getCurrentSampleIndex() const
+float LFO::getCurrentSampleIndex() const
 {
     return m_currentSampleIndex;
 }
 
 
-float WaveTableOscillator::getSampleDelta() const
+float LFO::getSampleDelta() const
 {
     return m_sampleDelta;
 }
 
 
-Error_t WaveTableOscillator::updateWaveTable()
+Error_t LFO::updateWaveTable()
 {
     // TODO: Is it better to update sampleDelta here??
     // TODO: Mechanism to check what has been updated and accordingl
@@ -109,7 +109,7 @@ Error_t WaveTableOscillator::updateWaveTable()
 }
 
 
-Error_t WaveTableOscillator::init(WaveTableOscillator::Waveform waveformType, float frequencyInHz, int sampleRateInHz)
+Error_t LFO::init(LFO::Waveform waveformType, float frequencyInHz, int sampleRateInHz)
 {
     setWavefromType(waveformType);
     setSampleRate(sampleRateInHz);
