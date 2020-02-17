@@ -1,37 +1,13 @@
 //
-// Created by Kaushal Sali on 15/02/20.
+// Created by Kaushal Sali on 16/02/20.
 //
 
-#ifndef MUSI6106_LFO_H
-#define MUSI6106_LFO_H
+#ifndef MUSI6106_WAVETABLEOSCILLATOR_H
+#define MUSI6106_WAVETABLEOSCILLATOR_H
 
 #include "ErrorDef.h"
 #include "RingBuffer.h"
 #include "Synthesis.h"
-
-template <class T>
-
-class LFO {
-public:
-    enum Waveform
-    {
-        Sine,
-        Rectangle,
-        Saw,
-        DC
-    };
-
-    LFO (Waveform wavetype, float freqInHz, int sampleRateInHz);
-
-    Error_t setWavefrom();
-    Error_t setFrequency(float frequencyInHz, int sampleRateInHz);
-    T getNextSample();
-
-private:
-    LFO();
-
-
-};
 
 
 template <class T>
@@ -50,7 +26,6 @@ public:
     Error_t setSampleRate(int sampleRate);
     Error_t updateWaveTable();
     Error_t init(Waveform waveformType, float frequencyInHz, int sampleRateInHz);
-
     T getNextSample();
 
 private:
@@ -65,4 +40,4 @@ private:
 
 
 
-#endif //MUSI6106_LFO_H
+#endif //MUSI6106_WAVETABLEOSCILLATOR_H

@@ -1,12 +1,8 @@
 //
-// Created by Kaushal Sali on 16/02/20.
-//
-
-//
 // Created by Kaushal Sali on 15/02/20.
 //
 
-#include "LFO.h"
+#include "WaveTableOscillator.h"
 #include "Synthesis.h"
 
 template<class T>
@@ -15,7 +11,6 @@ WaveTableOscillator<T>::WaveTableOscillator(int waveTableSize) :
         m_pWaveTable(new CRingBuffer<T> (waveTableSize))
 {
 }
-
 
 template<class T>
 T WaveTableOscillator<T>::getNextSample() {
