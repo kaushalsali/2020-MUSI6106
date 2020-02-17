@@ -9,7 +9,7 @@
 
 #include "ErrorDef.h"
 #include "RingBuffer.h"
-#include "LFO.h"
+
 
 class VibratoIf
 {

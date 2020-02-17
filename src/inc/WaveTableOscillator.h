@@ -10,7 +10,7 @@
 #include "Synthesis.h"
 
 
-template <class T>
+
 class WaveTableOscillator {
 public:
     enum Waveform
@@ -26,16 +26,16 @@ public:
     Error_t setSampleRate(int sampleRate);
     Error_t updateWaveTable();
     Error_t init(Waveform waveformType, float frequencyInHz, int sampleRateInHz);
-    T getNextSample();
+    float getNextSample();
 
 private:
     int m_waveTableSize;
-    CRingBuffer<T>* m_pWaveTable;
+    CRingBuffer<float>* m_pWaveTable;
     Waveform m_waveformType;
-    int m_frequency;
+    float m_frequency;
     int m_sampleRate;
-    float m_currentSample = 0.0f;
-    float m_sampleDelta = 0.0f;
+    float m_currentSample;
+    float m_sampleDelta;
 };
 
 
