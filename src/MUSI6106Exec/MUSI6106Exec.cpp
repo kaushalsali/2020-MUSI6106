@@ -17,6 +17,8 @@ void    showClInfo ();
 // main function
 int main(int argc, char* argv[])
 {
+    bool argsMissing = false;
+
     std::string sInputFilePath;                 //!< file paths
     std::string sOutputFilePath;
     float **ppfInputAudioData = 0;
@@ -38,26 +40,56 @@ int main(int argc, char* argv[])
 
     //////////////////////////////////////////////////////////////////////////////
     // parse command line arguments
-    if (argc < 2)
-    {
-        cout << "Missing audio input path!";
-        return -1;
+    if (argc == 1) {
+
     }
-    else
-    {
+    if (argc > 1) {
         sInputFilePath = argv[1];
         sOutputFilePath = sInputFilePath.substr(0, sInputFilePath.size() - 4).append("_cpp.wav");
-
-        delayTimeInSec = atof(argv[2]);
-        widthInSec = atof(argv[3]);
-        LFOFreqInHz = atof(argv[4]);
-        std::cout << "delay " << delayTimeInSec << std::endl;
-        std::cout << "width " << widthInSec << std::endl;
-        std::cout << "LFO Freq " << LFOFreqInHz << std::endl;
-
-
-
     }
+    else {
+        std::cout << "Missing: arg1: Input audio path" << std::endl;
+        argsMissing = true;
+    }
+    if (argc > 2) {
+        delayTimeInSec = atof(argv[2]);
+    }
+    else {
+        std::cout << "Missing: arg2: Delay Time" << std::endl;
+        argsMissing = true;
+    }
+    if (argc > 3) {
+        widthInSec = atof(argv[3]);
+        if (delayTimeInSec < 0) {
+            std::cout << "arg3: Width time cannot be negative" << std::endl;
+            return -1;
+        }
+    }
+    else {
+        std::cout << "Missing: arg3: Width Time" << std::endl;
+        argsMissing = true;
+    }
+    if (argc > 4) {
+        LFOFreqInHz = atof(argv[4]);
+        if (delayTimeInSec < 0) {
+            std::cout << "arg4: LFO Frequency cannot be negative" << std::endl;
+            return -1;
+        }
+    }
+    else {
+        std::cout << "Missing: arg4: LFO Frequency" << std::endl;
+        argsMissing = true;
+    }
+
+    if (argsMissing) // Stop if any argument is missing
+        return -1;
+
+    std::cout << "Delay: " << delayTimeInSec << std::endl;
+    std::cout << "Width: " << widthInSec << std::endl;
+    std::cout << "LFO Freq: " << LFOFreqInHz << std::endl;
+
+
+
 
     //////////////////////////////////////////////////////////////////////////////
     // open the input wave file
