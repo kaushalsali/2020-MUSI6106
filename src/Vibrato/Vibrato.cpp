@@ -45,24 +45,23 @@ Error_t Vibrato::process(float **ppfInputBuffer, float **ppfOutputBuffer, int nu
         auto indexOffset = m_pLFO->getNextSample() * (float) m_widthInSamples;
         for(int c = 0; c < m_numChannels; c++)
         {
-            auto a = m_ppBuffer[c]->get(indexOffset); // TODO: remove
             ppfOutputBuffer[c][i] = m_ppBuffer[c]->get(indexOffset);
-            auto b = m_ppBuffer[c]->getPostInc(); // Increment read by 1
-            auto x = ppfInputBuffer[c][i];
+            m_ppBuffer[c]->getPostInc(); // Increment read by 1
             m_ppBuffer[c]->putPostInc(ppfInputBuffer[c][i]); // Fill buffer and Increment write by 1
         }
     }
     return kNoError;
 }
 
-//TODO: Remove after debugging
+////TODO: Remove after debugging
+// Write LFO output to file.
 //Error_t Vibrato::process(float **ppfInputBuffer, float **ppfOutputBuffer, int numFrames) {
 //    std::cout << "---------------------------------------------------" << std::endl;
 //    for (int i = 0; i < numFrames; i++)
 //    {
 //        auto d = m_pLFO->getCurrentSampleIndex();
 //        auto v = m_pLFO->getNextSample();
-//        std::cout << d << "--" << v << std::endl;
+//        std::cout <<i << " " << d << "--" << v << std::endl;
 //        for(int c = 0; c < m_numChannels; c++)
 //        {
 //            ppfOutputBuffer[c][i] = v;
