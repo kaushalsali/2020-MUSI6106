@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
     //////////////////////////////////////////////////////////////////////////////
     // parse command line arguments
     sInputFilePath = argv[1];
-    sOutputFilePath = sInputFilePath.substr(0, sInputFilePath.size() - 4).append("_stft.wav");
+    sOutputFilePath = sInputFilePath.substr(0, sInputFilePath.size() - 4).append("_stft.txt");
     fftBlockSize = atoi(argv[2]);
     fftHopSize = atoi(argv[3]);
     
@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
         pFft->getMagnitude(pfMag, pfSpectralData);
 
         // Move window overlap portion to start of buffer.
-        CVectorFloat::moveInMem(ppfAudioData[0], fftHopSize, 0, fftBlockSize - fftHopSize);
+        CVectorFloat::moveInMem(ppfAudioData[0], 0, fftHopSize, fftBlockSize - fftHopSize);
 
         // Write magnitude spectrum of current time-step to output file.
         for (long long i = 0; i < fftMagSize; i++) {
