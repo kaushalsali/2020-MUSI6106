@@ -43,6 +43,7 @@ int CCombFilterBase::getDelayLineLength() {
 
 Error_t CCombFilterBase::setDelayLineLength(int delayLineLength) {
     this->delayLineLength = std::max(1, delayLineLength);
+    this->delayLine->setLength(delayLineLength);
     return kFunctionIllegalCallError;
 }
 
@@ -53,10 +54,10 @@ Error_t CCombFilterFIR::filter(float **ppfInputBuffer, float **ppfOutputBuffer, 
     auto *sample = new float[numChannels];
     for (int i=0; i<iNumberOfFrames; i++) {
         delayLine->fetch(sample);
+        delayLine->insert(ppfInputBuffer, i);
         for (int c=0; c<numChannels; c++) {
             ppfOutputBuffer[c][i] = ppfInputBuffer[c][i] + gain * sample[c];
         }
-        delayLine->insert(ppfInputBuffer, i);
     }
     delete[] sample;
     sample = nullptr;
@@ -144,5 +145,10 @@ Error_t AudioRingBuffer::remove() {
     }
     else
         return kOperationUnsuccessful;
+}
+
+Error_t AudioRingBuffer::setLength(int bufferLength) {
+    this->bufferLength = bufferLength;
+    return kNoError;
 }
 

@@ -50,6 +50,7 @@ class AudioRingBuffer {  // Note: Ideally should be placed separately outside of
 public:
     AudioRingBuffer(int bufferLength, int numChannels);
     ~AudioRingBuffer();
+    Error_t setLength(int bufferLength);
     Error_t insert(float **audioBuffer, int sampleIndex);
     Error_t fetch(float *sampleBuffer);
     Error_t remove();
