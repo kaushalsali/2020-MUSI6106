@@ -22,23 +22,42 @@ public:
         LFOFreqInHz
     };
 
-    Vibrato(float delayInSec, float modulationWidthInSec, float LFOFreqInHz, int sampleRateInHz, int numChannels);
+    Vibrato(float maxDelayInSec, float modulationWidthInSec, float LFOFreqInHz, float sampleRateInHz, int numChannels);
     ~Vibrato();
-    float getParam();
-    Error_t setParam();
+    float getParam(VibratoParams param);
+    Error_t setParam(VibratoParams param, float value);
     Error_t process(float **ppfInputBuffer, float **ppfOutputBuffer, int numFrames);
 
 
 private:
     Vibrato();
+    Error_t setLFOFreq(float freqInHz);
+
+    /*
+    * Updates delay length and calls updateBufferLength()
+    */
+    Error_t setDelay(float delayInSec);
+
+    /*
+    * Updates width and calls updateBufferLength()
+    */
+    Error_t setWidth(float widthInSec);
+
+    /*
+    * Updates the buffer length acc to changes in width and delay.
+    * Resets and initializes buffer with zeros. Read ptr is set to delay length.
+    */
+    Error_t updateBufferLength();
+
     CRingBuffer<float>** m_ppBuffer;
-    LFO* m_pLFO; //TODO: Give option to user to pass object
+    LFO* m_pLFO;
     float m_LFOFreqInHz;
+    float m_maxDelayInSec;
     float m_delayInSec;
     int m_delayInSamples;
     float m_widthInSec;
     int m_widthInSamples;
-    int m_sampleRate;
+    float m_sampleRate;
     int m_numChannels;
 };
 
