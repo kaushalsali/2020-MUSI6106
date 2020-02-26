@@ -16,12 +16,12 @@
 
 
 
-SUITE(WaveTable) {
+SUITE(LFO) {
 
-    struct WaveTableOscillatorData {
+    struct LFOData {
     public:
-        WaveTableOscillatorData() :
-            m_tableSize(128),
+        LFOData() :
+            m_tableSize(44100/4),
             m_waveform(LFO::Waveform::Sine),
             m_freq(441.0f),
             m_sampleRate(44100)
@@ -29,7 +29,7 @@ SUITE(WaveTable) {
             m_pWaveTable = new LFO(m_tableSize);
         }
 
-        ~WaveTableOscillatorData() {
+        ~LFOData() {
             delete m_pWaveTable;
         }
 
@@ -38,15 +38,25 @@ SUITE(WaveTable) {
         int m_sampleRate;
         LFO::Waveform m_waveform;
         LFO* m_pWaveTable;
+
     };
 
-    TEST_FIXTURE(WaveTableOscillatorData, Test1) //TODO: Rename Test
+    TEST_FIXTURE(LFOData, SineGeneration)
+    // Test Passes when tablesize == integer factor of 44100 (Fs)
     {
-        std::cout << "Hello Test" <<std::endl;
-        m_pWaveTable->init(m_waveform, m_freq, m_sampleRate);
-        for (int i=0; i<128*5; i++) {
-            // std::cout << m_pWaveTable->getCurrentSampleIndex() << " -- " << m_pWaveTable->getNextSample() << std::endl;
+        auto dataLength = m_sampleRate * 3;
+        auto* target = new float[dataLength];
+        auto* output = new float[dataLength];
+
+        CSynthesis::generateSine (target, 5.F, m_sampleRate, dataLength, 1.0F);
+
+        m_pWaveTable->init(m_waveform, 5.F, m_sampleRate);
+        for (int i=0; i<dataLength; i++) {
+            output[i] = m_pWaveTable->getNextSample();
+            std::cout << output[i] << "  " << target[i] << std::endl;
         }
+
+        CHECK_ARRAY_CLOSE(target,output, dataLength, 1e-3);
     }
 }
 
