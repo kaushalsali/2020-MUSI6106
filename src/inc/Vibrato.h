@@ -27,6 +27,8 @@ public:
     float getParam(VibratoParams param);
     Error_t setParam(VibratoParams param, float value);
     Error_t process(float **ppfInputBuffer, float **ppfOutputBuffer, int numFrames);
+    Error_t resetBuffer(); // reset and init buffer with zeros. Set read and write pointers acc to delay.  
+    int getBufferLength();
 
 
 private:

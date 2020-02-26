@@ -118,6 +118,14 @@ Error_t Vibrato::updateBufferLength() {
     return kFunctionIllegalCallError;
 }
 
+int Vibrato::getBufferLength() {
+    return m_delayInSamples + (int) std::ceil(m_widthInSamples / 2.0f);
+}
+
+Error_t Vibrato::resetBuffer() {
+    updateBufferLength();
+}
+
 
 
 

@@ -44,7 +44,7 @@ Error_t LFO::setFrequency(float frequencyInHz)
 {
     m_frequency = frequencyInHz;
     m_sampleDelta = (float)m_waveTableSize * m_frequency / (float)m_sampleRate;
-    std::cout << "m_sampleDelta = " << m_sampleDelta << std::endl; //TODO: Delete
+    //std::cout << "m_sampleDelta = " << m_sampleDelta << std::endl; //TODO: Delete
     return kNoError;
 }
 
