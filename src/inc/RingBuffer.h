@@ -12,14 +12,15 @@ class CRingBuffer
 {
 public:
     explicit CRingBuffer (int iBufferLengthInSamples) :
-        m_iBuffLength(iBufferLengthInSamples),
+        m_iMaxBuffLength(iBufferLengthInSamples),
+        m_iCurrentBuffLength(iBufferLengthInSamples),
         m_iReadIdx(0),                          
         m_iWriteIdx(0),
         m_ptBuff(0)
     {
         assert(iBufferLengthInSamples > 0);
 
-        m_ptBuff        = new T [m_iBuffLength];
+        m_ptBuff        = new T [m_iMaxBuffLength];
         reset();
     }
 
@@ -66,10 +67,10 @@ public:
     */
     void put(const T* ptNewBuff, int iLength)
     {
-        assert(iLength <= m_iBuffLength && iLength >= 0);
+        assert(iLength <= m_iCurrentBuffLength && iLength >= 0);
 
         // copy two parts: to the end of buffer and after wrap around
-        int iNumValues2End      = std::min(iLength,m_iBuffLength - m_iWriteIdx);
+        int iNumValues2End      = std::min(iLength, m_iMaxBuffLength - m_iWriteIdx);
 
         memcpy (&m_ptBuff[m_iWriteIdx], ptNewBuff, sizeof(T)*iNumValues2End);
         if ((iLength - iNumValues2End)>0)
@@ -112,13 +113,13 @@ public:
             int     iOffset = static_cast<int>(std::floor(fOffset));
             float   fFrac   = fOffset - iOffset;
             int     iRead   = m_iReadIdx + iOffset;
-            while (iRead > m_iBuffLength-1)
-                iRead  -= m_iBuffLength;
+            while (iRead > m_iCurrentBuffLength-1)
+                iRead  -= m_iCurrentBuffLength;
             while (iRead < 0)
-                iRead  += m_iBuffLength;
+                iRead  += m_iCurrentBuffLength;
 
             return (1-fFrac) * m_ptBuff[iRead] +
-                       fFrac * m_ptBuff[(iRead+1) % m_iBuffLength];
+                       fFrac * m_ptBuff[(iRead+1) % m_iCurrentBuffLength];
         }
     }
 
@@ -129,10 +130,10 @@ public:
     */
     void get (T* ptBuff, int iLength) const
     {
-        assert(iLength <= m_iBuffLength && iLength >= 0);
+        assert(iLength <= m_iCurrentBuffLength && iLength >= 0);
 
         // copy two parts: to the end of buffer and after wrap around
-        int iNumValues2End      = std::min(iLength, m_iBuffLength - m_iReadIdx);
+        int iNumValues2End      = std::min(iLength, m_iCurrentBuffLength - m_iReadIdx);
 
         memcpy (ptBuff, &m_ptBuff[m_iReadIdx], sizeof(T)*iNumValues2End);
         if ((iLength - iNumValues2End)>0)
@@ -144,7 +145,7 @@ public:
     */
     void reset ()
     {
-        memset (m_ptBuff, 0, sizeof(T)*m_iBuffLength);
+        memset (m_ptBuff, 0, sizeof(T)*m_iMaxBuffLength);
         m_iReadIdx  = 0;
         m_iWriteIdx = 0;
     }
@@ -188,16 +189,28 @@ public:
     */
     int getNumValuesInBuffer () const
     {
-        return (m_iWriteIdx - m_iReadIdx + m_iBuffLength)%m_iBuffLength;
+        return (m_iWriteIdx - m_iReadIdx + m_iCurrentBuffLength)%m_iCurrentBuffLength;
     }
 
     /*! returns the length of the internal buffer
     \return int
     */
+    int getMaxLength () const
+    {
+        return m_iMaxBuffLength;
+    }
+
     int getLength () const
     {
-        return m_iBuffLength;
+        return m_iCurrentBuffLength;
     }
+
+    void setLength (int buffLength)
+    {
+        m_iCurrentBuffLength = std::min(std::max(1,buffLength), m_iMaxBuffLength);
+        reset();
+    }
+
 private:
     CRingBuffer ();
     CRingBuffer(const CRingBuffer& that);
@@ -207,12 +220,13 @@ private:
         while ((iIdx + iOffset) < 0)
         {
             // avoid negative buffer indices
-            iOffset += m_iBuffLength;   
+            iOffset += m_iCurrentBuffLength;
         }
-        iIdx    = (iIdx + iOffset) % m_iBuffLength;
+        iIdx    = (iIdx + iOffset) % m_iCurrentBuffLength;
     };
 
-    int m_iBuffLength,              //!< length of the internal buffer
+    int m_iMaxBuffLength,              //!< length of the internal buffer
+        m_iCurrentBuffLength,
         m_iReadIdx,                 //!< current read index
         m_iWriteIdx;                //!< current write index
 
