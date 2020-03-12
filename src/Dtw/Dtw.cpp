@@ -5,7 +5,15 @@
 
 #include "Dtw.h"
 
-CDtw::CDtw( void )
+CDtw::CDtw( void ) :
+    m_fMinPathCost(-1),
+    m_iMinCostPathLength(0),
+    m_iNumCols(-1),
+    m_iNumRows(-1),
+    m_ppfCumulativeCostMatrix(nullptr),
+    m_ppiMinCostPathBuffer(nullptr),
+    m_ppiMinCostPathStart(nullptr),
+    m_ppkMinCostPathMatrix(nullptr)
 {
 
 }
