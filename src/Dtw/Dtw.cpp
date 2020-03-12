@@ -2,7 +2,6 @@
 #include "Vector.h"
 #include "Util.h"
 #include <algorithm>
-#include <iostream>
 
 #include "Dtw.h"
 
@@ -18,8 +17,8 @@ CDtw::~CDtw( void )
 
 Error_t CDtw::init( int iNumRows, int iNumCols )
 {
-    assert(iNumCols > 0);
-    assert(iNumRows > 0);
+//    assert(iNumCols > 0);
+//    assert(iNumRows > 0);
 
     m_iNumRows = iNumRows;
     m_iNumCols = iNumCols;
@@ -41,10 +40,7 @@ Error_t CDtw::init( int iNumRows, int iNumCols )
     for (int i=0; i < 2; i++)
         m_ppiMinCostPathBuffer[i] = new int [m_iNumRows + m_iNumCols];
 
-    // Set path start pointer to end of path buffer
-     ;
-
-    m_iMinCostPathLength = -1;
+    m_iMinCostPathLength = 0;
     m_fMinPathCost = -1;
 
     return kNoError;
@@ -52,17 +48,16 @@ Error_t CDtw::init( int iNumRows, int iNumCols )
 
 Error_t CDtw::reset()
 {
-    assert(m_ppfCumulativeCostMatrix);
-    assert(m_ppiMinCostPathBuffer);
+//    assert(m_ppfCumulativeCostMatrix);
+//    assert(m_ppiMinCostPathBuffer);
 
     if (!m_ppfCumulativeCostMatrix)
         return kNotInitializedError;
 
     m_fMinPathCost = -1;
-    m_iMinCostPathLength = -1;
+    m_iMinCostPathLength = 0;
     m_iNumRows = -1;
     m_iNumCols = -1;
-
 
     // Reset path buffer adn path start pointer
     for (int i=0; i < 2; i++)
@@ -87,8 +82,12 @@ Error_t CDtw::reset()
 
 Error_t CDtw::process(float **ppfDistanceMatrix)
 {
-    assert(ppfDistanceMatrix);
+//    assert(ppfDistanceMatrix);
+//    assert(*ppfDistanceMatrix);
+
     if (!ppfDistanceMatrix)
+        return kFunctionInvalidArgsError;
+    if (!*ppfDistanceMatrix)
         return kNotInitializedError;
 
     // Calculate cumulative cost matrix and path matrix
@@ -125,20 +124,8 @@ Error_t CDtw::process(float **ppfDistanceMatrix)
                 m_ppfCumulativeCostMatrix[i][j] = min + ppfDistanceMatrix[i][j];
                 m_ppkMinCostPathMatrix[i][j] = dir;
             }
-
-//            m_ppfCumulativeCostMatrix[i][j] = std::min(std::min(m_ppfCumulativeCostMatrix[i - 1][j], m_ppfCumulativeCostMatrix[i][j - 1]), m_ppfCumulativeCostMatrix[i - 1][j - 1]) + ppfDistanceMatrix[i][j];
         }
     }
-
-//    std::cout <<" ===== " <<std::endl;
-//    for (int i=0; i<m_iNumRows; i++) {
-//        for (int j = 0; j < m_iNumCols; j++) {
-//            std::cout << m_ppfCumulativeCostMatrix[i][j] << " ";
-//        }
-//        std::cout << std::endl;
-//    }
-//    std::cout <<" ===== " << std::endl;
-
 
     // Find min cost path from path matrix
     int i = m_iNumRows - 1;
@@ -151,8 +138,6 @@ Error_t CDtw::process(float **ppfDistanceMatrix)
         --k;
         m_ppiMinCostPathBuffer[0][k] = i;
         m_ppiMinCostPathBuffer[1][k] = j;
-       // std::cout << m_ppiMinCostPathBuffer[0][k] << "  " << m_ppiMinCostPathBuffer[1][k] << std::endl;
-
 
         if (m_ppkMinCostPathMatrix[i][j] == kHoriz)
             --j;
@@ -165,17 +150,9 @@ Error_t CDtw::process(float **ppfDistanceMatrix)
     }
     while ((i >= 0) || (j >= 0));
 
-//    std::cout << "kaushal" <<std::endl;
-//    for (int a=0; a<9; a++)
-//        std::cout << m_ppiMinCostPathBuffer[0][a] << "  " << m_ppiMinCostPathBuffer[1][a] << std::endl;
-
     m_iMinCostPathLength = m_iNumRows + m_iNumCols - k;
     m_ppiMinCostPathStart[0] = m_ppiMinCostPathBuffer[0] + k;
     m_ppiMinCostPathStart[1] = m_ppiMinCostPathBuffer[1] + k;
-
-//    std::cout << "kaushal" <<std::endl;
-//    for (int a=0; a<5; a++)
-//        std::cout << m_ppiMinCostPathStart[0][a] << "  " << m_ppiMinCostPathStart[1][a] << std::endl;
 
     return kNoError;
 }
@@ -190,17 +167,16 @@ float CDtw::getPathCost() const
     return m_fMinPathCost;
 }
 
-Error_t CDtw::getPath( int **&ppiPathResult ) const
+Error_t CDtw::getPath( int ** ppiPathResult ) const
 {
     if (!m_ppiMinCostPathStart)
         return kNotInitializedError;
 
-    ppiPathResult = m_ppiMinCostPathStart;
-
-
-//    std::cout << "kaushasdjal" <<std::endl;
-//    for (int a=0; a<5; a++)
-//        std::cout << ppiPathResult[0][a] << "  " << ppiPathResult[1][a] << std::endl;
+    for (int k = 0; k < m_iMinCostPathLength; k++)
+    {
+        ppiPathResult[0][k] = m_ppiMinCostPathStart[0][k];
+        ppiPathResult[1][k] = m_ppiMinCostPathStart[1][k];
+    }
 
     return kNoError;
 }

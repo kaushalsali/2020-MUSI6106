@@ -54,7 +54,7 @@ public:
     \param ppiPathResult pointer to memory the result is written to (dimensions [2][length_of_path])
     \return Error_t
     */
-    Error_t getPath (int **& ppiPathResult) const;
+    Error_t getPath (int ** ppiPathResult) const;
 
 private:
     enum Directions_t
