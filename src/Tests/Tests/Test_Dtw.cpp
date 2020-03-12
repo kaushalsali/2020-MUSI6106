@@ -3,7 +3,7 @@
 #ifdef WITH_TESTS
 #include <cassert>
 #include <cstdio>
-
+#include <iostream>
 #include "UnitTest++.h"
 
 #include "Vector.h"
@@ -81,6 +81,11 @@ SUITE(Dtw)
         CHECK_EQUAL(2.F, m_pCDtw->getPathCost());
 
         m_pCDtw->getPath (m_ppiPath);
+
+//        std::cout << "kaushjal" <<std::endl;
+//        for (int a=0; a<5; a++)
+//            std::cout << m_ppiPath[0][a] << "  " << m_ppiPath[1][a] << std::endl;
+
 
         CHECK_ARRAY_EQUAL(aiPathResultRow, m_ppiPath[CDtw::kRow], iPathLength);
         CHECK_ARRAY_EQUAL(aiPathResultCol, m_ppiPath[CDtw::kCol], iPathLength);

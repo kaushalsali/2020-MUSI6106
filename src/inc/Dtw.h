@@ -54,7 +54,7 @@ public:
     \param ppiPathResult pointer to memory the result is written to (dimensions [2][length_of_path])
     \return Error_t
     */
-    Error_t getPath (int **ppiPathResult) const;
+    Error_t getPath (int **& ppiPathResult) const;
 
 private:
     enum Directions_t
@@ -65,6 +65,16 @@ private:
 
         kNumDirections
     };
+
+    float ** m_ppfCumulativeCostMatrix;
+    Directions_t ** m_ppkMinCostPathMatrix;
+    int ** m_ppiMinCostPathBuffer;
+    int ** m_ppiMinCostPathStart;
+    int m_iMinCostPathLength;
+    float m_fMinPathCost;
+    int m_iNumRows;
+    int m_iNumCols;
+
 };
 
 
